@@ -7,7 +7,7 @@ Youtube GIFfer is a javascript bookmarklet shim to assist in creating animated G
 Create a [bookmarklet](http://en.wikipedia.org/wiki/Bookmarklet) pointing to:
 
 ```
-javascript:var s=document.createElement('script');s.setAttribute('src','https://raw.githubusercontent.com/jcheatham/yt-giffer/master/yt-giffer.js');document.getElementsByTagName('head')[0].appendChild(s);
+javascript:(function(){var s=document.createElement('script');s.setAttribute('src','https://rawgit.com/jcheatham/yt-giffer/master/yt-giffer.js?t='+Date.now());document.getElementsByTagName('head')[0].appendChild(s);})();
 ```
 
 ## Usage

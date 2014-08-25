@@ -25,7 +25,7 @@ javascript:(function(){var s=document.createElement('script');s.setAttribute('sr
 In no particular order.
 
  * Use a Worker.
- * Configurable loop count, scaling factor, per-frame durations.
+ * Configurable loop count, per-frame durations.
  * imgur upload.
 
 ## Contributions

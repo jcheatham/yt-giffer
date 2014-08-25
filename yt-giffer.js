@@ -1342,7 +1342,7 @@ GIFEncoder = function() {
   	return output;
   }
 
-  function CaptureFrames(container, video, advanceRate, count) {
+  function CaptureFrames(container, video, advanceRate, scaleFactor, count) {
     video.onseeked = null;
     if (count <= 0) return;
 
@@ -1370,7 +1370,7 @@ GIFEncoder = function() {
     }
     container.appendChild(xButton);
 
-    video.onseeked = function() { CaptureFrames(container, video, advanceRate, count-1); }
+    video.onseeked = function() { CaptureFrames(container, video, advanceRate, scaleFactor, count-1); }
     video.currentTime += advanceRate;
   }
 
@@ -1378,7 +1378,6 @@ GIFEncoder = function() {
 
   var video = document.querySelector(".video-stream,.html5-main-video");
   var content = document.querySelector("#content");
-  var scaleFactor = 0.25;
 
   var giffer = document.querySelector("#giffer");
   if (!giffer) {
@@ -1390,7 +1389,8 @@ GIFEncoder = function() {
   giffer.style.border = "1px solid black";
   giffer.style.width = "640px";
   giffer.style.position = "relative";
-  var html = 'Capture <input id="gif_count" type="text" style="width:50px" value="10"> frames';
+  var html = 'Scaling factor: <input id="gif_scale" type="text" style="width:50px" value="0.25"><br/>';
+  html += 'Capture <input id="gif_count" type="text" style="width:50px" value="10"> frames';
   html += ', starting at <input id="gif_now" type="text" style="width:50px" value="0">';
   html += ', then every <input id="gif_advance" type="text" style="width:50px" value="100"> milliseconds.';
   html += '  <a id="gif_go">GO!</a><br/>';
@@ -1401,16 +1401,18 @@ GIFEncoder = function() {
   html += '<div id="gif_image_container"><image id="gif_image"></div>';
   giffer.innerHTML = html;
 
-  var gif_count = giffer.children[0]
-    , gif_now = giffer.children[1]
-    , gif_advance = giffer.children[2]
-    , gif_go = giffer.children[3]
-    , gif_capture_container = giffer.children[5]
+  var gif_scale = giffer.children[0]
+    , gif_count = giffer.children[2]
+    , gif_now = giffer.children[3]
+    , gif_advance = giffer.children[4]
+    , gif_go = giffer.children[5]
+    , gif_capture_container = giffer.children[7]
     , gif_captures = gif_capture_container.children[0]
-    , gif_compile = giffer.children[6]
-    , gif_image_container = giffer.children[7]
+    , gif_compile = giffer.children[8]
+    , gif_image_container = giffer.children[9]
     , gif_image = gif_image_container.children[0];
 
+  gif_scale.onchange = function(){ gif_scale.value = parseFloat(gif_scale.value) || 0.25; }
   gif_count.onchange = function(){ gif_count.value = parseInt(gif_count.value) || 1; }
   gif_advance.onchange = function(){ gif_advance.value = parseInt(gif_advance.value) || 0; }
   video.ontimeupdate = function(){ gif_now.value = video.currentTime; };
@@ -1420,15 +1422,15 @@ GIFEncoder = function() {
   gif_go.onclick = function(){
     var count = parseInt(gif_count.value);
     var advanceRate = parseInt(gif_advance.value)/1000;
-    CaptureFrames(gif_captures, video, advanceRate, count);
+    var scaleFactor = parseFloat(gif_scale.value);
+    CaptureFrames(gif_captures, video, advanceRate, scaleFactor, count);
   };
 
   gif_compile.onclick = function(){
     console.log("Time to compile some GIF!");
-    debugger;
     var encoder = new GIFEncoder();
     encoder.setRepeat(0);
-    encoder.setDelay(parseInt(gif_advance.value)); // TODO have this set per-frame
+    encoder.setDelay(Math.abs(parseInt(gif_advance.value))); // TODO have this set per-frame
     encoder.start();
     var canvases = gif_captures.getElementsByTagName("canvas");
     for (var i=0,l=canvases.length; i<l; i++) {

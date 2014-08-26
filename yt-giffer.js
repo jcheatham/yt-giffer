@@ -1437,7 +1437,8 @@ GIFEncoder = function() {
       encoder.addFrame(canvases[i].getContext('2d'));
     }
     encoder.finish();
-    gif_image.src = 'data:image/gif;base64,'+encode64(encoder.stream().getData());
+
+    gif_image.src = URL.createObjectURL(new Blob([new Uint8Array(encoder.stream().bin)], {type: 'image/gif'}));
   };
 
   console.log("youtube giffer systems operational at "+(new Date()).toISOString());
